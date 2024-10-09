@@ -1,0 +1,4 @@
+Tk: sa
+MK: 1
+để có thể mở ứng dung
+
