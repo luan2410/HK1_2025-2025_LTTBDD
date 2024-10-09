@@ -16,11 +16,11 @@ export default function App({ navigation }) {
                     style={styles.imageStyle1}
                 />
                 <Image
-                    source={require('../assets/data/Image 95.png')}
+                    source={require('../assets/data/Image95.png')}
                     style={styles.imageStyle2}
                 />
                 <Image
-                    source={require('../assets/data/Image 97.png')}
+                    source={require('../assets/data/Image97.png')}
                     style={styles.imageStyle3}
                 />
                 

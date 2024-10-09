@@ -4,17 +4,17 @@ import React, { useState } from 'react';
 
 export default function App({ navigation }) {
     const [data, setData] = useState([
-        { key: '1', type: 'Vegetable', name: 'Apple', price: '28.00', image: require('../assets/data/Image 101.png') },
-        { key: '2', type: 'Vegetable', name: 'Peach', price: '28.00', image: require('../assets/data/Image 102.png') },
-        { key: '3', type: 'Vegetable', name: 'Pear', price: '28.00', image: require('../assets/data/Image 103.png') },
-        { key: '4', type: 'Vegetable', name: 'Pear', price: '28.00', image: require('../assets/data/Image 105.png') },
-        { key: '5', type: 'Vegetable', name: 'Orginz', price: '28.00', image: require('../assets/data/Image 106.png') },
-        { key: '6', type: 'Vegetable', name: 'Peach', price: '28.00', image: require('../assets/data/Image 107.png') },
-        { key: '7', type: 'Seafood', name: 'Seafood_1', price: '28.00', image: require('../assets/data/Image 95.png') },
-        { key: '8', type: 'Seafood', name: 'Seafood_2', price: '28.00', image: require('../assets/data/Image 95.png') },
-        { key: '9', type: 'Seafood', name: 'Seafood_3', price: '28.00', image: require('../assets/data/Image 95.png') },
-        { key: '10', type: 'Seafood', name: 'Seafood_4', price: '28.00', image: require('../assets/data/Image 95.png') },
-        { key: '11', type: 'Seafood', name: 'Seafood_5', price: '28.00', image: require('../assets/data/Image 95.png') },
+        { key: '1', type: 'Vegetable', name: 'Apple', price: '28.00', image: require('../assets/data/Image101.png') },
+        { key: '2', type: 'Vegetable', name: 'Peach', price: '28.00', image: require('../assets/data/Image102.png') },
+        { key: '3', type: 'Vegetable', name: 'Pear', price: '28.00', image: require('../assets/data/Image103.png') },
+        { key: '4', type: 'Vegetable', name: 'Pear', price: '28.00', image: require('../assets/data/Image105.png') },
+        { key: '5', type: 'Vegetable', name: 'Orginz', price: '28.00', image: require('../assets/data/Image106.png') },
+        { key: '6', type: 'Vegetable', name: 'Peach', price: '28.00', image: require('../assets/data/Image107.png') },
+        { key: '7', type: 'Seafood', name: 'Seafood_1', price: '28.00', image: require('../assets/data/Image95.png') },
+        { key: '8', type: 'Seafood', name: 'Seafood_2', price: '28.00', image: require('../assets/data/Image95.png') },
+        { key: '9', type: 'Seafood', name: 'Seafood_3', price: '28.00', image: require('../assets/data/Image95.png') },
+        { key: '10', type: 'Seafood', name: 'Seafood_4', price: '28.00', image: require('../assets/data/Image95.png') },
+        { key: '11', type: 'Seafood', name: 'Seafood_5', price: '28.00', image: require('../assets/data/Image95.png') },
         { key: '12', type: 'Drink', name: 'Drink_1', price: '28.00', image: require('../assets/data/Image_96.png') },
         { key: '13', type: 'Drink', name: 'Drink_2', price: '28.00', image: require('../assets/data/Image_96.png') },
         { key: '14', type: 'Drink', name: 'Drink_3', price: '28.00', image: require('../assets/data/Image_96.png') },
@@ -30,7 +30,7 @@ export default function App({ navigation }) {
             {/* Header  */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => { navigation.navigate("screen1") }}>
-                    <Image source={require('../assets/data/Image 182.png')} style={styles.headerImage} />
+                    <Image source={require('../assets/data/Image182.png')} style={styles.headerImage} />
                 </TouchableOpacity>
             </View>
 

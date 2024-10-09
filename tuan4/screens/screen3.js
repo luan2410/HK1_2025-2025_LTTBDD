@@ -9,7 +9,7 @@ export default function App({}) {
       type: "Vegetable",
       name: "Apple",
       price: "28.00",
-      image: require("../assets/data/Image 101.png"),
+      image: require("../assets/data/Image101.png"),
       sl: 2,
     },
     {
@@ -17,7 +17,7 @@ export default function App({}) {
       type: "Vegetable",
       name: "Pear",
       price: "28.00",
-      image: require("../assets/data/Image 102.png"),
+      image: require("../assets/data/Image102.png"),
       sl: 2,
     },
     {
@@ -25,7 +25,7 @@ export default function App({}) {
       type: "Vegetable",
       name: "Avocado",
       price: "10.00",
-      image: require("../assets/data/Image 103.png"),
+      image: require("../assets/data/Image103.png"),
       sl: 1,
     },
     {
@@ -33,7 +33,7 @@ export default function App({}) {
       type: "Vegetable",
       name: "CoCoNut",
       price: "28.00",
-      image: require("../assets/data/Image 105.png"),
+      image: require("../assets/data/Image105.png"),
       sl: 1,
     },
     {
@@ -41,7 +41,7 @@ export default function App({}) {
       type: "Vegetable",
       name: "oranges",
       price: "8.00",
-      image: require("../assets/data/Image 106.png"),
+      image: require("../assets/data/Image106.png"),
       sl: 1,
     },
     {
@@ -49,7 +49,7 @@ export default function App({}) {
       type: "Vegetable",
       name: "pear",
       price: "28.00",
-      image: require("../assets/data/Image 107.png"),
+      image: require("../assets/data/Image107.png"),
       sl: 4,
     },
     {
@@ -57,7 +57,7 @@ export default function App({}) {
       type: "Vegetable",
       name: "peach",
       price: "28.00",
-      image: require("../assets/data/Image 105.png"),
+      image: require("../assets/data/Image105.png"),
       sl: 1,
     },
 
@@ -66,35 +66,35 @@ export default function App({}) {
       type: "Seafood",
       name: "Seafood_1",
       price: "28.00",
-      image: require("../assets/data/Image 95.png"),
+      image: require("../assets/data/Image95.png"),
     },
     {
       key: "1",
       type: "Seafood",
       name: "Seafood_2",
       price: "28.00",
-      image: require("../assets/data/Image 95.png"),
+      image: require("../assets/data/Image95.png"),
     },
     {
       key: "1",
       type: "Seafood",
       name: "Seafood_3",
       price: "28.00",
-      image: require("../assets/data/Image 95.png"),
+      image: require("../assets/data/Image95.png"),
     },
     {
       key: "1",
       type: "Seafood",
       name: "Seafood_4",
       price: "28.00",
-      image: require("../assets/data/Image 95.png"),
+      image: require("../assets/data/Image95.png"),
     },
     {
       key: "1",
       type: "Seafood",
       name: "Seafood_5",
       price: "28.00",
-      image: require("../assets/data/Image 95.png"),
+      image: require("../assets/data/Image95.png"),
     },
 
     {
@@ -206,35 +206,35 @@ export default function App({}) {
                 </Text>
                 <View style={{ flexDirection: "row" }}>
                   <Image
-                    source={require("../assets/data/Image 180.png")}
+                    source={require("../assets/data/Image180.png")}
                     style={{ width: 15, height: 15, marginTop: 10 }}
                   />
                   <Image
-                    source={require("../assets/data/Image 180.png")}
+                    source={require("../assets/data/Image180.png")}
                     style={{ width: 15, height: 15, marginTop: 10 }}
                   />
                   <Image
-                    source={require("../assets/data/Image 180.png")}
+                    source={require("../assets/data/Image180.png")}
                     style={{ width: 15, height: 15, marginTop: 10 }}
                   />
                   <Image
-                    source={require("../assets/data/Image 180.png")}
+                    source={require("../assets/data/Image180.png")}
                     style={{ width: 15, height: 15, marginTop: 10 }}
                   />
                   <Image
-                    source={require("../assets/data/Image 180.png")}
+                    source={require("../assets/data/Image180.png")}
                     style={{ width: 15, height: 15, marginTop: 10 }}
                   />
                 </View>
               </View>
                 <View style={{marginLeft: 140, flexDirection: 'row', alignItems:'center'}}>
                     <Image
-                        source={require('../assets/data/Image 176.png')}
+                        source={require('../assets/data/Image176.png')}
                         style={{width: 15, height: 15,marginRight: 10}}
                     />
                     <Text style={{fontSize: 15}}>{item.sl}</Text>
                     <Image
-                        source={require('../assets/data/Image 175.png')}
+                        source={require('../assets/data/Image175.png')}
                         style={{width: 15, height: 15,marginRight: 10}}
                     />
                 </View>
