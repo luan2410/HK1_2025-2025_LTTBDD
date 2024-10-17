@@ -1,8 +1,13 @@
 import { StyleSheet, Text, View , Image, TextInput} from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 
+
 export default function Screen2({navigation}) {
+    const [Uname, setUname] = useState('');
+    const [Uemail,setUemail] = useState('');
+    const [Upassword,setUpassword] = useState('');
+    const userInfo={Uname,Upassword,Uemail};
   return (
     <View style={styles.container}>
       <View style={styles.view1}>
@@ -13,22 +18,22 @@ export default function Screen2({navigation}) {
       <View style={styles.view2}>
             <View style={styles.viewip}>
                 <Image source={require('../assets/DATA/codicon_account.png')} style={styles.img}/>
-                <TextInput placeholder='enter your usser name' style={styles.ipBox}  ></TextInput>
+                <TextInput placeholder='enter your usser name' style={styles.ipBox} value={Uname} onChangeText={setUname} ></TextInput>
             </View>
             <View style={styles.viewip}>
                 <Image source={require('../assets/DATA/Vector.png')} style={styles.img}/>
-                <TextInput placeholder='Enter your email address' style={styles.ipBox} ></TextInput>
+                <TextInput placeholder='Enter your email address' style={styles.ipBox} value={Uemail} onChangeText={setUemail} ></TextInput>
             </View>
             <View style ={styles.viewip}>
                 <Image source={require('../assets/DATA/lock.png')} style={styles.img} />
-                <TextInput placeholder='Enter your password' style={styles.ipBox} ></TextInput>
+                <TextInput placeholder='Enter your password' style={styles.ipBox} value={Upassword} onChangeText={setUpassword} secureTextEntry ></TextInput>
                 <Image source={require('../assets/DATA/eye.png')} style={styles.img} />
             </View>
             
-            
+         
             <Text style={{alignSelf: 'flex-start', marginLeft:22, marginBottom:10}}> I agree with tems & Conditions</Text>
             <TouchableOpacity 
-                onPress={()=> navigation.navigate('Screen3')} 
+                onPress={()=> navigation.navigate('Screen3',{userInfo})} 
                 style={{width:'90%', height:50,textAlign: 'center', alignItems: 'center', borderRadius: 20, marginTop:20, backgroundColor: 'aqua', justifyContent: 'center'}}
                     >
                     <Text style={{color:'white'}}>Continue</Text>
