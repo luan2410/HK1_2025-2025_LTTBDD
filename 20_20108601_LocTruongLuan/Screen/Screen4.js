@@ -40,8 +40,13 @@ export default function Screen4() {
   const [stSize,setstSize] = useState(size[1]);
   const [sProduct,setProduct] = useState(quantity[0]);
   const render =({item}) =>(
-    <TouchableOpacity onPress={() => setstProduct(item)}>
+    <TouchableOpacity onPress={() => setstProduct(item)} >
         <Image source={item.image} style={styles.produtimg}  />
+    </TouchableOpacity>
+  )
+  const renderSize =({item})=>(
+    <TouchableOpacity onPress={()=> setstSize(item)}>
+        <Text style={[styles.txtSize,{backgroundColor: stSize== item ? 'aqua' : 'white' ,color: stSize == item ? 'white' : 'black'},]}>{item}</Text>
     </TouchableOpacity>
   )
   return (
@@ -55,9 +60,9 @@ export default function Screen4() {
             </FlatList>
       </View>
       <View style={styles.view2}>
-            <View style={{flexDirection: 'row', alignItems:'center', alignSelf: 'flex-start', marginLeft: 19  }}>
+            <View style={{flexDirection: 'row', alignItems:'center', alignSelf: 'flex-start', }}>
                   <Text style={{color: 'aqua',fontWeight:'bold',fontSize: 30}}>${stProduct.price}</Text>
-                  <Text style={{backgroundColor:'pink', color: 'red', width:70 , height: 20, marginLeft:20, borderRadius: 5 }}>Buy 1 get 1</Text>
+                  <Text style={{backgroundColor:'pink', color: 'red', width:70 , height: 20, borderRadius: 5 ,marginLeft:10 }}>Buy 1 get 1</Text>
             </View>
             <View style={{marginTop:10}}>
                   <View style={{flexDirection:'row',alignItems:'center',}}>
@@ -66,13 +71,19 @@ export default function Screen4() {
                           <Text>{stProduct.title}</Text>
                       </View>
 
-                      <View style={{marginLeft:10, flexDirection:'row', alignSelf:'flex-end'}}>
+                      <View style={{ flexDirection:'row', alignSelf:'flex-end',marginLeft:15 }}>
                         <Image source={require('../assets/DATA/Rating3.png')}/>
                         <Text>{stProduct.rating}</Text>
                       </View>
                      
                   </View>
                   
+            </View>
+            <View style={{marginTop:10, alignSelf:'flex-start'}}>
+                  <Text style={{fontWeight: 'bold',fontSize:20}}>Size</Text>
+                  <FlatList data={size} renderItem={renderSize} horizontal keyExtractor={(item) =>item} >
+
+                  </FlatList>
             </View>
       </View>
     </View>
@@ -82,8 +93,7 @@ export default function Screen4() {
 const styles = StyleSheet.create({
   container:{
     flex:1,
-    backgroundColor: 'red',
-    margin:15,
+    margin:25,
 
   },
   view1:{
@@ -95,8 +105,6 @@ const styles = StyleSheet.create({
   },
   view2:{
     flex:5,
-    width: '85%',
-    alignItems:'center',
     paddingTop:20,
   },
   text:{
@@ -107,11 +115,19 @@ const styles = StyleSheet.create({
   },
   produtimg:{
       width:  75,
-      height: 75,
+      height: 65,
       marginHorizontal:5,
       margin:5,
       borderRadius: 15,
-  }
+  },
+  txtSize:{borderWidth:1, 
+    height: 25, width: 25,
+     borderBlockColor:'gray',
+    justifyContent: 'center',
+    borderRadius: 5,
+    alignItems:'center',
+    
+    }
 
 
 })
