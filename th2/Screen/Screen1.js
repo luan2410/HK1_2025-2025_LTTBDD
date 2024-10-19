@@ -1,20 +1,37 @@
-import { StyleSheet, Text, View , Image } from 'react-native'
+import { StyleSheet, Text, View , Image ,TextInput} from 'react-native'
 import React, { useState } from 'react'
-import { TextInput } from 'react-native-web'
+
 import { TouchableOpacity } from 'react-native';
+import { Alert } from 'react-native';
 
  const listuser =[
-    {id:1 ,taikhoan :'luan@gmail.com' , matkhau: '123' },
-    {id:2 ,taikhoan :'luan2@gmail.com' , matkhau: '123' },
-    {id:3 ,taikhoan :'luan3@gmail.com' , matkhau: '123' },
-    {id:4 ,taikhoan :'luan4@gmail.com' , matkhau: '123' },
-    {id:5 ,taikhoan :'luan5@gmail.com' , matkhau: '123' },
+    {id:1 ,email :'luan@gmail.com' , matkhau: '123' },
+    {id:2 ,email :'luan2@gmail.com' , matkhau: '123' },
+    {id:3 ,email :'luan3@gmail.com' , matkhau: '123' },
+    {id:4 ,email :'luan4@gmail.com' , matkhau: '123' },
+    {id:5 ,email :'luan5@gmail.com' , matkhau: '123' },
     
  ];
 export default function Screen1({navigation}) {
     
     const [email,setemail] = useState('');
     const [pass,setpass] = useState('');
+    // kiểm tra đăng nhập
+    const checklogin =() =>{
+        const user = listuser.find(
+            (user) => user.email == email && user.matkhau == pass
+        );
+        console.log('Email:', email);
+        console.log('Password:', pass);
+        if(user){
+            navigation.navigate('Screen2');
+        }
+        else{
+            Alert.alert('Mật khẩu hoặc tài khoản không đúng');
+        }
+    };
+
+
   return (
         <View style={styles.container}>
             <View >
@@ -31,8 +48,8 @@ export default function Screen1({navigation}) {
                     <Image source={require('../assets/Data/lock.png')}/>
                     <TextInput placeholder='Enter your email password' style={styles.ip} value={pass} onChangeText={setpass} secureTextEntry/>
                 </View>
-                <Text style={{marginTop: 5 , alignSelf:'flex-end'}}>Forgot password?</Text>
-                <TouchableOpacity onPress={()=> navigation.navigate('Screen2')} style={styles.button} >
+                <Text style={{marginTop: 5 , alignSelf:'flex-end', color: 'aqua', fontSize: 15}}>Forgot password?</Text>
+                <TouchableOpacity onPress={checklogin} style={styles.button} >
                     <Text style={{color: 'white', fontWeight: 'bold',}}>Continue</Text>
                 </TouchableOpacity>
                 <View>
