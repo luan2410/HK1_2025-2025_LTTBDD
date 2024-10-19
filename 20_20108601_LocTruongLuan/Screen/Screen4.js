@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList} from 'react-native';
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Alert } from 'react-native';
@@ -86,7 +86,8 @@ export default function Screen4() {
           <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Size</Text>
           <FlatList data={size} renderItem={renderSize} horizontal keyExtractor={(item) => item} />
         </View>
-        <View style={{ marginTop: 10,alignItems:'center', flexDirection:'row',}}>
+        <View><Text>Quantity</Text></View>
+        <View style={{ marginTop: 5,alignItems:'center', flexDirection:'row',}}>
           <View style={{ alignItems: 'flex-start' ,flexDirection:'row'}}>
             <TouchableOpacity onPress={tru} style={styles.btnct}><Text>-</Text></TouchableOpacity>
             <Text style={{fontSize:20}}>{squantity}</Text>
@@ -98,13 +99,16 @@ export default function Screen4() {
           </View>
         </View>
         <View>
-          <Image source={require('../assets/DATA/Line4.png')} style={styles.mag} />
+          <View style={{borderBottomColor: '#000',borderBottomWidth: 1, }}/>
           <Text style={styles.mag}>Size guide</Text>
-          <Image source={require('../assets/DATA/Line4.png')} style={styles.mag}/>
+          <View style={{borderBottomColor: '#000',borderBottomWidth: 1, }}/>
           <Text style={styles.mag}>Reviews 99 </Text>
-          <Image source={require('../assets/DATA/Line4.png')} style={styles.mag} />
-          <TouchableOpacity onPress={()=> Alert.alert('đã thêm vào giỏ hàng')}>
-             <Text style={{color: 'white', alignItems:'center', backgroundColor:'aqua', width:'100%',height: 40,justifyContent: 'center',}}>Add to Cart</Text>
+          <View style={{borderBottomColor: '#000',borderBottomWidth: 1, }}/>
+          <TouchableOpacity onPress={()=> Alert.alert('đã thêm vào giỏ hàng')}  >
+          <View style={{ alignItems:'center', backgroundColor:'aqua',height: 40,justifyContent: 'center', marginTop:5, borderRadius: 5}}> 
+          <Text style={{color: 'white',fontWeight: 'bold',}}>Add to Cart</Text>
+          </View>
+             
           </TouchableOpacity>
         </View>
       </View>
