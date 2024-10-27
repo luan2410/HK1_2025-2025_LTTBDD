@@ -1,14 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
+
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Screen1 from './Screen/Screen1';
-  
-
+import Screen3 from './Screen/Screen3';
+import Screen2 from './Screen/Screen2';
+import Screen4 from './Screen/Screen4';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
 export default function App() {
   return (
     <NavigationContainer>
@@ -30,9 +30,7 @@ export default function App() {
             return <Image source={iconName} style={{ width: 30, height: 30 }} />;
           },
           tabBarStyle: {
-            backgroundColor: '#5958b2',
-            height: 70,
-            paddingBottom: 10,
+            backgroundColor: '#5958b2',height: 70, paddingBottom: 10,
           },
           tabBarLabelStyle: {
             fontSize: 12,
@@ -40,19 +38,14 @@ export default function App() {
         })}
       >
         <Tab.Screen name='Screen1' component={Screen1} />
-        <Tab.Screen name='exploreicon' component={Screen1} />
-        <Tab.Screen name='searchicon' component={Screen1} />
-        <Tab.Screen name='profileicon' component={Screen1} />
+        <Tab.Screen name='exploreicon' component={Screen2} />
+        <Tab.Screen name='searchicon' component={Screen3} />
+        <Tab.Screen name='profileicon' component={Screen4} />
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+ 
 });
