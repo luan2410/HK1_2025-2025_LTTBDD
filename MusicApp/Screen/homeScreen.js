@@ -11,9 +11,19 @@ import {
     Modal,
     ScrollView,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { Audio } from 'expo-av';
 
-export default function HomeScreen() {
+const playMusic = async () => {
+    if (currentSong?.FilePath) {
+        const { sound } = await Audio.Sound.createAsync({ uri: currentSong.FilePath });
+        await sound.playAsync();
+    }
+};
+
+
+export default function HomeScreen({navigation}) {
     const [songs, setSongs] = useState([]);
     const [artists, setArtists] = useState([]);
     const [filteredSongs, setFilteredSongs] = useState([]);
@@ -21,6 +31,8 @@ export default function HomeScreen() {
     const [selectedChart, setSelectedChart] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [showUserModal, setShowUserModal] = useState(false); // Trạng thái để mở/đóng modal người dùng
+    const [currentSong, setCurrentSong] = useState(null); // Lưu bài hát hiện tại
+    const [showPlayerModal, setShowPlayerModal] = useState(false); // Điều khiển hiển thị panel phát nhạc
 
     useEffect(() => {
         fetchData();
@@ -43,10 +55,16 @@ export default function HomeScreen() {
             console.error('Error fetching data:', error);
         }
     };
+   
     const handleAvatarPress = () => {
       setShowUserModal(true);
     };
-    
+    const handleLogout = () => {
+      navigation.reset({
+          index: 0,
+          routes: [{ name: 'Launch' }],
+      });
+    };
     const handleFollow = async (artistId) => {
         try {
             await axios.post(`http://localhost:3000/follow`, { artistId });
@@ -69,12 +87,17 @@ export default function HomeScreen() {
             setFilteredSongs(filtered);
         }
     };
-
+    // ham mo panel  phat nhac 
+    const openPlayer = (song) => {
+      setCurrentSong(song); // Lưu thông tin bài hát hiện tại, bao gồm hình ảnh
+      setShowPlayerModal(true);
+    };
+  
+  
     const openChart = (chartTitle) => {
         setSelectedChart(chartTitle);
         setShowModal(true);
     };
-
     const renderUserModal = () => (
       <Modal
           visible={showUserModal}
@@ -100,10 +123,7 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                   <TouchableOpacity
                       style={styles.logoutButton}
-                      onPress={() => {
-                          setShowUserModal(false);
-                          Alert.alert('Logged out', 'You have successfully logged out.');
-                      }}
+                      onPress={handleLogout}
                   >
                       <Text style={styles.logoutButtonText}>Log Out</Text>
                   </TouchableOpacity>
@@ -111,6 +131,7 @@ export default function HomeScreen() {
           </View>
       </Modal>
     );
+  
   
     const renderHeader = () => (
       <View style={styles.header}>
@@ -147,7 +168,46 @@ export default function HomeScreen() {
             onChangeText={handleSearch}
         />
     );
-
+    const renderPlayerModal = () => (
+      <Modal
+          visible={showPlayerModal}
+          transparent={true}
+          animationType="none"
+          onRequestClose={() => setShowPlayerModal(false)}
+      >
+          <TouchableOpacity
+              style={styles.modalBackground}
+              activeOpacity={1}
+              onPress={() => setShowPlayerModal(false)}
+          />
+          <View style={styles.bottomPlayer}>
+              <View style={styles.playerContent}>
+                  <Image
+                      source={{ uri: currentSong?.SongImg || 'https://via.placeholder.com/150' }}
+                      style={styles.playerImage}
+                  />
+                  <View style={styles.songDetails}>
+                      <Text style={styles.playerTitle}>{currentSong?.Title}</Text>
+                      <Text style={styles.playerArtist}>{currentSong?.ArtistName}</Text>
+                  </View>
+                  <View style={styles.playerControls}>
+                      <TouchableOpacity>
+                          <Text style={styles.controlButton}>⏮</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={playMusic} >
+                          <Text style={styles.controlButton}>⏯</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity>
+                          <Text style={styles.controlButton}>⏭</Text>
+                      </TouchableOpacity>
+                  </View>
+              </View>
+          </View>
+      </Modal>
+  );
+  
+  
+  
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -156,12 +216,12 @@ export default function HomeScreen() {
 
                 {/* Suggestions Section */}
                 <Text style={styles.sectionTitle}>Suggestions for You</Text>
-                <FlatList
+                {/* <FlatList
                     data={filteredSongs}
                     horizontal
                     keyExtractor={(item) => item.Id.toString()}
                     renderItem={({ item }) => (
-                        <TouchableOpacity style={styles.card}>
+                        <TouchableOpacity style={styles.card} onPress={() => openPlayer(item)}  >
                             <Image
                                 source={{ uri: 'https://via.placeholder.com/150' }}
                                 style={styles.cardImage}
@@ -171,7 +231,24 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     )}
                     showsHorizontalScrollIndicator={false}
+                /> */}
+                <FlatList
+                    data={filteredSongs}
+                    horizontal
+                    keyExtractor={(item) => item.Id.toString()}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity style={styles.card} onPress={() => openPlayer(item)}>
+                            <Image
+                                source={{ uri: item.SongImg || 'https://via.placeholder.com/150' }}
+                                style={styles.cardImage}
+                            />
+                            <Text style={styles.cardTitle}>{item.Title}</Text>
+                            <Text style={styles.cardSubtitle}>{item.ArtistName}</Text>
+                        </TouchableOpacity>
+                    )}
+                    showsHorizontalScrollIndicator={false}
                 />
+
                 <Text style={styles.sectionTitle}>Charts</Text>
                   <FlatList
                       data={[
@@ -242,6 +319,7 @@ export default function HomeScreen() {
                 />
             </ScrollView>
             {renderUserModal()}
+            {renderPlayerModal()}
 
             {/* Modal for Top 50 */}
             <Modal visible={showModal} animationType="slide">
@@ -400,6 +478,57 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: 'gray',
     },
+    bottomPlayer: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        height: 150,
+        backgroundColor: '#fff',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
+        padding: 10,
+    },
+    playerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '100%',
+    },
+    playerImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 10,
+    },
+    songDetails: {
+        flex: 1,
+        marginLeft: 10,
+        justifyContent: 'center',
+    },
+    playerTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    playerArtist: {
+        fontSize: 14,
+        color: 'gray',
+    },
+    playerControls: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: 100,
+    },
+    controlButton: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1DB954',
+    },
+
     chartCard: {
         width: 150,
         marginRight: 10,

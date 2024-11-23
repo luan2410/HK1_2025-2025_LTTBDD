@@ -37,7 +37,7 @@ function HomeTabs() {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Launch">
+      <Stack.Navigator initialRouteName="HomeTabs">
         {/* Màn hình Launch */}
         <Stack.Screen
           name="Launch"
