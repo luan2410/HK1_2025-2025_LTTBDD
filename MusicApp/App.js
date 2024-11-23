@@ -37,7 +37,7 @@ function HomeTabs() {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeTabs">
+      <Stack.Navigator initialRouteName="Launch">
         {/* Màn hình Launch */}
         <Stack.Screen
           name="Launch"
@@ -54,7 +54,7 @@ export default function App() {
         <Stack.Screen
           name="Register"
           component={RegisScreen}
-          options={{ headerShown: false }}
+          options={{ title: 'Register' }}
         />
         {/* Màn hình Home Tabs */}
         <Stack.Screen
