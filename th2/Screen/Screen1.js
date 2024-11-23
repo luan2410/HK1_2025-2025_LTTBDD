@@ -60,6 +60,7 @@ export default function Screen1({navigation}) {
                         <Image source={require('../assets/Data/apple.png')}/>
                     </View>
                 </View>
+                
             </View>
         </View>
   )

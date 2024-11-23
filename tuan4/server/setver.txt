@@ -1,0 +1,13 @@
+mkdir my-express-api
+cd my-express-api
+
+
+// 
+npm init -y
+
+//
+npm install express
+
+
+//
+node index.js

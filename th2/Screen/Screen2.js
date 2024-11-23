@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { TextInput } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 
-export default function Screen2() {
+export default function Screen2({navigation}) {
     const data = [
         { id: '1', category: 'Smartphone', name: 'iPhone 12', price: 899, note: 'bestseller', img: require('../assets/Data/1.png') },
         { id: '2', category: 'Smartphone', name: 'Samsung Galaxy S21', price: 799, note: 'bestseller', img: require('../assets/Data/2.png')},
@@ -52,7 +52,10 @@ export default function Screen2() {
   return (
     <View style={styles.container} >
       <View style={styles.header}>
-        <Text style={[styles.txt1 ] }> {'<   '} Electronics</Text>
+        <TouchableOpacity onPress={()=> navigation.goBack()} >
+          <Text style={{fontSize: 20}} >{'<'}</Text>
+        </TouchableOpacity>
+        <Text style={[styles.txt1 ] }> Electronics</Text>
         <Image source={require('..//assets/Data/codicon_account.png')} style={{marginLeft: 'auto'}} />
       </View>
       <View>
@@ -96,6 +99,13 @@ export default function Screen2() {
             </View>
             <Text style={{marginLeft: 'auto', fontWeight: 'bold', fontSize: 20}}>${item.price}</Text>
           </View> )} />
+        </View>
+        <View>
+          {! showall&&(
+            <TouchableOpacity onPress={()=> setshowall('true')}>
+              <Text>See all</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
