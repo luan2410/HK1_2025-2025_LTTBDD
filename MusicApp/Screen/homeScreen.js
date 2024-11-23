@@ -20,6 +20,7 @@ export default function HomeScreen() {
     const [searchText, setSearchText] = useState('');
     const [selectedChart, setSelectedChart] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [showUserModal, setShowUserModal] = useState(false); // Trạng thái để mở/đóng modal người dùng
 
     useEffect(() => {
         fetchData();
@@ -42,7 +43,10 @@ export default function HomeScreen() {
             console.error('Error fetching data:', error);
         }
     };
-
+    const handleAvatarPress = () => {
+      setShowUserModal(true);
+    };
+    
     const handleFollow = async (artistId) => {
         try {
             await axios.post(`http://localhost:3000/follow`, { artistId });
@@ -71,44 +75,69 @@ export default function HomeScreen() {
         setShowModal(true);
     };
 
-    // const renderHeader = () => (
-    //     <View style={styles.header}>
-    //         <Image
-    //             source={{
-    //                 uri: 'https://framerusercontent.com/images/6LBaLrUCjBXzJqW0ZtQeKpdO3GM.png', // Thay bằng avatar từ API
-    //             }}
-    //             style={styles.avatar}
-    //         />
-    //         <Text style={styles.greeting}>Good morning, Truong Luan </Text>
-    //     </View>
-    // );
+    const renderUserModal = () => (
+      <Modal
+          visible={showUserModal}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setShowUserModal(false)}
+      >
+          <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                  <Image
+                      source={{
+                          uri: 'https://framerusercontent.com/images/6LBaLrUCjBXzJqW0ZtQeKpdO3GM.png',
+                      }}
+                      style={styles.modalAvatar}
+                  />
+                  <Text style={styles.modalName}>Truong Luan</Text>
+                  <Text style={styles.modalEmail}>luan@example.com</Text>
+                  <TouchableOpacity
+                      style={styles.backButton}
+                      onPress={() => setShowUserModal(false)}
+                  >
+                      <Text style={styles.backButtonText}>Close</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                      style={styles.logoutButton}
+                      onPress={() => {
+                          setShowUserModal(false);
+                          Alert.alert('Logged out', 'You have successfully logged out.');
+                      }}
+                  >
+                      <Text style={styles.logoutButtonText}>Log Out</Text>
+                  </TouchableOpacity>
+              </View>
+          </View>
+      </Modal>
+    );
+  
     const renderHeader = () => (
       <View style={styles.header}>
-          {/* Góc trái: Logo */}
-          <Image
-              source={require('../assets/all_images/Home - Audio Listing/Image36.png')} // Thay bằng đường dẫn logo của bạn
-              style={styles.logo}
-          />
-          {/* Giữa: Chào người dùng */}
-          <Text style={styles.greeting}>Good morning, Truong Luan</Text>
-          {/* Góc phải: Biểu tượng thông báo và hình ảnh người dùng */}
-          <View style={styles.rightHeader}>
-              <TouchableOpacity>
-                  <Image
-                      source={require('../assets/all_images/Home - Audio Listing/notifi.png')} // Thay bằng biểu tượng thông báo của bạn
-                      style={styles.notificationIcon}
-                  />
-              </TouchableOpacity>
-              <Image
-                  source={{
-                      uri: 'https://framerusercontent.com/images/6LBaLrUCjBXzJqW0ZtQeKpdO3GM.png', // Ảnh user từ API
-                  }}
-                  style={styles.avatar}
-              />
-          </View>
+        <Image
+            source={require('../assets/all_images/Home - Audio Listing/Image36.png')} // Thay bằng đường dẫn logo của bạn
+            style={styles.logo}
+        />
+        <Text style={styles.greeting}>Good morning, {'\n'} Truong Luan</Text>
+        <View style={styles.rightHeader}>
+            <TouchableOpacity>
+                <Image
+                    source={require('../assets/all_images/Home - Audio Listing/notifi.png')} // Biểu tượng thông báo
+                    style={styles.notificationIcon}
+                />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleAvatarPress}>
+                <Image
+                    source={{
+                        uri: 'https://framerusercontent.com/images/6LBaLrUCjBXzJqW0ZtQeKpdO3GM.png',
+                    }}
+                    style={styles.avatar}
+                />
+            </TouchableOpacity>
+        </View>
       </View>
-  );
-  
+    );
+
 
     const renderSearchBar = () => (
         <TextInput
@@ -167,29 +196,6 @@ export default function HomeScreen() {
                       showsHorizontalScrollIndicator={false}
                   />
 
-
-                {/* Charts Section
-                <Text style={styles.sectionTitle}>Charts</Text>
-                <FlatList
-                    data={[
-                        { id: '1', title: 'Top 50 Canada' },
-                        { id: '2', title: 'Top 50 Global' },
-                        { id: '3', title: 'Top 50 Trending' },
-                    ]}
-                    horizontal
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                            style={styles.chartCard}
-                            onPress={() => openChart(item.title)}
-                        >
-                            <Text style={styles.chartTitle}>{item.title}</Text>
-                            <Text style={styles.chartSubtitle}>Updated daily</Text>
-                        </TouchableOpacity>
-                    )}
-                    showsHorizontalScrollIndicator={false}
-                /> */}
-
                 {/* Albums Section */}
                 <Text style={styles.sectionTitle}>Trending Albums</Text>
                 <FlatList
@@ -235,6 +241,7 @@ export default function HomeScreen() {
                     showsHorizontalScrollIndicator={false}
                 />
             </ScrollView>
+            {renderUserModal()}
 
             {/* Modal for Top 50 */}
             <Modal visible={showModal} animationType="slide">
@@ -299,28 +306,14 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24, // Kích thước biểu tượng thông báo
         marginRight: 10, // Khoảng cách giữa biểu tượng thông báo và avatar
-    },
-    // avatar: {
-    //     width: 40,
-    //     height: 40, // Kích thước avatar
-    //     borderRadius: 20, // Làm avatar tròn
-    // },
-
-    // header: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     margin: 20,
-    // },
+    }, 
     avatar: {
         width: 50,
         height: 50,
         borderRadius: 25,
         marginRight: 10,
     },
-    // greeting: {
-    //     fontSize: 18,
-    //     fontWeight: 'bold',
-    // },
+    
     searchBar: {
         height: 40,
         borderColor: '#ccc',
@@ -336,6 +329,59 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 20,
     },
+    modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Lớp phủ mờ
+    justifyContent: 'center',
+    alignItems: 'center',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        padding: 20,
+        alignItems: 'center',
+    },
+    modalAvatar: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        marginBottom: 20,
+    },
+    modalName: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    modalEmail: {
+        fontSize: 16,
+        color: 'gray',
+        marginBottom: 20,
+    },
+    backButton: {
+        backgroundColor: '#ccc',
+        padding: 10,
+        borderRadius: 10,
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: '#000',
+    },
+    logoutButton: {
+        backgroundColor: '#FF6347',
+        padding: 10,
+        borderRadius: 10,
+        width: '100%',
+        alignItems: 'center',
+    },
+    logoutButtonText: {
+        fontSize: 16,
+        color: '#fff',
+    },
+
     card: {
         width: 150,
         marginRight: 10,
