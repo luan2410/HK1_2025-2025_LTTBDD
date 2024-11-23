@@ -39,7 +39,7 @@ export default function HomeScreen({navigation}) {
           const songsResponse = await axios.get('http://localhost:3000/songs');
           const artistsResponse = await axios.get('http://localhost:3000/artists');
   
-          setSongs(songsResponse.data || []); // Nếu không có dữ liệu, fallback về mảng rỗng
+          setSongs(songsResponse.data || []); // 
           setFilteredSongs(songsResponse.data || []);
           setArtists(artistsResponse.data || []);
       } catch (error) {
@@ -116,7 +116,21 @@ export default function HomeScreen({navigation}) {
           Alert.alert('Error', 'Failed to fetch songs for the selected chart.');
           console.error('Error fetching chart data:', error);
       }
-  };
+    };
+    const openAlbum = async (artistId, artistName, artistAvatar) => {
+        try {
+            setSelectedChart(`Album của ${artistName}`); // Hiển thị tiêu đề album
+            setShowModal(true); // Hiển thị modal
+
+            // Gọi API lấy danh sách bài hát theo nghệ sĩ
+            const response = await axios.get(`http://localhost:3000/albums/${artistId}`);
+            setFilteredSongs(response.data || []); // Cập nhật danh sách bài hát
+        } catch (error) {
+            Alert.alert('Error', 'Failed to fetch songs for the selected album.');
+            console.error('Error fetching album data:', error);
+        }
+    };
+
   
     const renderUserModal = () => (
       <Modal
@@ -279,21 +293,25 @@ export default function HomeScreen({navigation}) {
                 {/* Albums Section */}
                 <Text style={styles.sectionTitle}>Trending Albums</Text>
                 <FlatList
-                    data={songs}
+                    data={artists}
                     horizontal
                     keyExtractor={(item) => item.Id.toString()}
                     renderItem={({ item }) => (
-                        <TouchableOpacity style={styles.card}>
+                        <TouchableOpacity
+                            style={styles.card}
+                            onPress={() => openAlbum(item.Id, item.Name, item.Avatar)}
+                        >
                             <Image
-                                source={{ uri: 'https://via.placeholder.com/150' }}
+                                source={{ uri: item.Avatar || 'https://via.placeholder.com/150' }} // Hình ảnh nghệ sĩ
                                 style={styles.cardImage}
                             />
-                            <Text style={styles.cardTitle}>{item.Album}</Text>
-                            <Text style={styles.cardSubtitle}>{item.ArtistName}</Text>
+                            <Text style={styles.cardTitle}>{item.Name}</Text>
+                            <Text style={styles.cardSubtitle}>Trending Album</Text>
                         </TouchableOpacity>
                     )}
                     showsHorizontalScrollIndicator={false}
                 />
+
 
                 {/* Artists Section */}
                 <Text style={styles.sectionTitle}>Popular Artists</Text>
@@ -322,36 +340,36 @@ export default function HomeScreen({navigation}) {
                 />
             </ScrollView>
             {renderUserModal()}
-            {renderPlayerModal()}
+            {renderPlayerModal()}       
 
-            {/* Modal for Top 50 */}
-            <Modal visible={showModal} animationType="slide">
-              <View style={styles.modalContainer}>
-                  <Text style={styles.modalTitle}>{selectedChart}</Text>
-                  <FlatList
-                      data={filteredSongs}
-                      keyExtractor={(item) => item.Id.toString()}
-                      renderItem={({ item }) => (
-                          <View style={styles.modalItem}>
-                              <Image
-                                  source={{ uri: item.SongImg || 'https://via.placeholder.com/150' }}
-                                  style={styles.modalItemImage}
-                              />
-                              <View style={styles.modalItemContent}>
-                                  <Text style={styles.modalItemTitle}>{item.Title}</Text>
-                                  <Text style={styles.modalItemSubtitle}>{item.ArtistName}</Text>
-                              </View>
-                          </View>
-                      )}
-                  />
-                  <TouchableOpacity
-                      style={styles.closeButton}
-                      onPress={() => setShowModal(false)}
-                  >
-                      <Text style={styles.closeButtonText}>Close</Text>
-                  </TouchableOpacity>
-              </View>
+          <Modal visible={showModal} animationType="slide">
+            <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>{selectedChart}</Text>
+                <FlatList
+                    data={filteredSongs}
+                    keyExtractor={(item) => item.Id.toString()}
+                    renderItem={({ item }) => (
+                        <View style={styles.modalItem}>
+                            <Image
+                                source={{ uri: item.SongImg || 'https://via.placeholder.com/150' }}
+                                style={styles.modalItemImage}
+                            />
+                            <View style={styles.modalItemContent}>
+                                <Text style={styles.modalItemTitle}>{item.Title}</Text>
+                                <Text style={styles.modalItemSubtitle}>{item.ArtistName}</Text>
+                            </View>
+                        </View>
+                    )}
+                />
+                <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setShowModal(false)}
+                >
+                    <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+            </View>
           </Modal>
+
 
         </View>
     );
