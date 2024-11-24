@@ -18,6 +18,8 @@ const PlaylistScreen = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('playlists'); // Tab mặc định
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null); // Playlist đang được chọn
+  const [hiddenSongs, setHiddenSongs] = useState(new Set()); // Set để theo dõi các bài nhạc đã ẩn
 
   // Fetch dữ liệu từ API
   const fetchLibraryData = async () => {
@@ -55,36 +57,104 @@ const PlaylistScreen = () => {
   // Lọc theo tab
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    const filteredTabData = libraryData.filter((item) => item.type === tab);
-    setFilteredData(filteredTabData);
+    if (tab === 'new tag') {
+      // Hiển thị 2 albums và 2 songs ngẫu nhiên cho tab "new tag"
+      const randomAlbums = getRandomItems(libraryData.filter((item) => item.type === 'album'), 2);
+      const randomSongs = getRandomItems(libraryData.filter((item) => item.type === 'song'), 2);
+      setFilteredData([...randomAlbums, ...randomSongs]);
+    } else if (tab === 'songs') {
+      // Hiển thị 6 bài nhạc ngẫu nhiên cho tab "songs"
+      const randomSongs = getRandomItems(libraryData.filter((item) => item.type === 'song'), 6);
+      setFilteredData(randomSongs);
+    } else if (tab === 'albums') {
+      // Hiển thị 2 albums ngẫu nhiên cho tab "albums"
+      const randomAlbums = getRandomItems(libraryData.filter((item) => item.type === 'album'), 2);
+      setFilteredData(randomAlbums);
+    } else if (tab === 'artists') {
+      // Hiển thị 4 nghệ sĩ ngẫu nhiên cho tab "artists"
+      const randomArtists = getRandomItems(libraryData.filter((item) => item.type === 'artist'), 4);
+      setFilteredData(randomArtists);
+    } else if (tab === 'playlists') {
+      // Hiển thị tất cả playlists (với 2 playlist ngẫu nhiên được chọn)
+      const playlists = libraryData.filter((item) => item.type === 'playlist');
+      setFilteredData(playlists.slice(0, 2)); // Hiển thị 2 playlist
+    }
   };
 
-  const renderLibraryItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Image source={{ uri: item.coverImage }} style={styles.coverImage} />
-      <View style={styles.details}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
-      </View>
+  // Hàm giúp lấy các phần tử ngẫu nhiên từ danh sách
+  const getRandomItems = (arr, count) => {
+    let shuffled = arr.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
 
-      {/* Tương tác */}
-      {item.type === 'artist' && (
-        <TouchableOpacity style={styles.followButton}>
-          <Text style={styles.followText}>Follow</Text>
-        </TouchableOpacity>
-      )}
-      {item.type === 'song' && (
-        <TouchableOpacity>
-          <Text style={styles.likeButton}>💙</Text>
-        </TouchableOpacity>
-      )}
-      {item.type === 'album' && (
-        <TouchableOpacity>
-          <Text style={styles.arrowButton}>›</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+  // Hiển thị bài nhạc trong playlist
+  const handlePlaylistSelect = (playlist) => {
+    setSelectedPlaylist(playlist);
+  };
+
+  // Xử lý ẩn bài nhạc khi nhấn vào trái tim
+  const handleLikePress = (songId) => {
+    setHiddenSongs(prevState => {
+      const newState = new Set(prevState);
+      newState.add(songId); // Thêm bài nhạc vào Set (ẩn nó)
+      return newState;
+    });
+  };
+
+  const renderLibraryItem = ({ item }) => {
+    // Kiểm tra nếu bài nhạc đã bị ẩn
+    if (hiddenSongs.has(item.id)) {
+      return null; // Nếu bài nhạc đã bị ẩn, không hiển thị nó
+    }
+
+    return (
+      <View style={styles.itemContainer}>
+        <Image source={{ uri: item.coverImage }} style={styles.coverImage} />
+        <View style={styles.details}>
+          <Text style={styles.itemTitle}>{item.title}</Text>
+          <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
+        </View>
+
+        {/* Tương tác */}
+        {item.type === 'artist' && (
+          <TouchableOpacity style={styles.followButton}>
+            <Text style={styles.followText}>Follow</Text>
+          </TouchableOpacity>
+        )}
+        {item.type === 'song' && (
+          <TouchableOpacity onPress={() => handleLikePress(item.id)}>
+            <Text style={styles.likeButton}>💙</Text>
+          </TouchableOpacity>
+        )}
+        {item.type === 'album' && (
+          <TouchableOpacity>
+            <Text style={styles.arrowButton}>›</Text>
+          </TouchableOpacity>
+        )}
+        {item.type === 'playlist' && (
+          <TouchableOpacity onPress={() => handlePlaylistSelect(item)}>
+            <Text style={styles.arrowButton}>▶️</Text> {/* Mũi tên để mở playlist */}
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
+
+  const renderPlaylistDetails = () => {
+    if (!selectedPlaylist) return null;
+    const songsInPlaylist = getRandomItems(libraryData.filter((item) => item.playlistId === selectedPlaylist.id && item.type === 'song'), 4);
+    return (
+      <View style={styles.playlistPanel}>
+        <Text style={styles.panelTitle}>Songs in {selectedPlaylist.title}</Text>
+        <FlatList
+          data={songsInPlaylist}
+          renderItem={renderLibraryItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContainer}
+        />
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -104,17 +174,11 @@ const PlaylistScreen = () => {
         {['playlists', 'new tag', 'songs', 'albums', 'artists'].map((tab) => (
           <TouchableOpacity
             key={tab}
-            style={[
-              styles.tabItem,
-              activeTab === tab && styles.activeTabItem,
-            ]}
+            style={[styles.tabItem, activeTab === tab && styles.activeTabItem]}
             onPress={() => handleTabChange(tab)}
           >
             <Text
-              style={[
-                styles.tabText,
-                activeTab === tab && styles.activeTabText,
-              ]}
+              style={[styles.tabText, activeTab === tab && styles.activeTabText]}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </Text>
@@ -133,6 +197,9 @@ const PlaylistScreen = () => {
           contentContainerStyle={styles.listContainer}
         />
       )}
+
+      {/* Hiển thị chi tiết playlist nếu có */}
+      {renderPlaylistDetails()}
     </View>
   );
 };
@@ -161,16 +228,15 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   tabItem: {
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 15,
-    borderRadius: 20,
-    backgroundColor: '#eee',
   },
   activeTabItem: {
     backgroundColor: '#000',
+    borderRadius: 20,
   },
   tabText: {
     fontSize: 14,
@@ -238,6 +304,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginTop: 20,
+  },
+  playlistPanel: {
+    backgroundColor: '#fff',
+    marginTop: 20,
+    padding: 15,
+    borderRadius: 10,
+  },
+  panelTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
 });
 
