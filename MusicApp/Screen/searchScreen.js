@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Import icon từ Expo
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +20,58 @@ const SearchScreen = () => {
   const [loading, setLoading] = useState(false);
   const [currentSongIndex, setCurrentSongIndex] = useState(null); // Index bài hát đang phát
   const [isPlaying, setIsPlaying] = useState(false); // Trạng thái phát nhạc
+  const [isListening, setIsListening] = useState(false); // Trạng thái lắng nghe
+  const recognitionRef = useRef(null); // Lưu SpeechRecognition instance
+
+  // Kiểm tra nếu trình duyệt hỗ trợ Web Speech API
+  useEffect(() => {
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'vi-VN'; // Ngôn ngữ tiếng Việt
+
+      recognition.onstart = () => {
+        console.log('Voice recognition started');
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event) => {
+        console.log('Voice recognition result:', event.results);
+        if (event.results.length > 0) {
+          const transcript = event.results[0][0].transcript;
+          setSearchText(transcript); // Ghi kết quả vào ô tìm kiếm
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Voice recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        console.log('Voice recognition ended');
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+      console.warn('Trình duyệt không hỗ trợ Web Speech API');
+    }
+  }, []);
+
+  // Bắt đầu lắng nghe giọng nói
+  const startListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.start();
+    }
+  };
+
+  // Dừng lắng nghe giọng nói
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+  };
 
   // Fetch dữ liệu từ API
   const fetchData = async () => {
@@ -54,20 +107,6 @@ const SearchScreen = () => {
     setIsPlaying(true);
   };
 
-  const handlePrevious = () => {
-    if (currentSongIndex > 0) {
-      setCurrentSongIndex(currentSongIndex - 1);
-      setIsPlaying(true);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentSongIndex < data.filter((item) => item.Type === 'Song').length - 1) {
-      setCurrentSongIndex(currentSongIndex + 1);
-      setIsPlaying(true);
-    }
-  };
-
   const renderItem = ({ item, index }) => {
     let imageStyle = styles.trackImage;
 
@@ -82,7 +121,7 @@ const SearchScreen = () => {
     return (
       <TouchableOpacity
         style={styles.itemContainer}
-        onPress={() => item.Type === 'Song' && handlePlaySong(index)} // Nhấp vào bài nhạc để mở panel
+        onPress={() => item.Type === 'Song' && handlePlaySong(index)}
       >
         <Image
           source={{ uri: item.Image || 'https://via.placeholder.com/150' }}
@@ -116,6 +155,14 @@ const SearchScreen = () => {
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
         />
+        <TouchableOpacity onPress={isListening ? stopListening : startListening}>
+          <Ionicons
+            name={isListening ? 'mic' : 'mic-outline'}
+            size={24}
+            color={isListening ? 'red' : 'gray'}
+            style={styles.voiceIcon}
+          />
+        </TouchableOpacity>
       </View>
       {/* Tabs */}
       <View style={styles.tabsContainer}>
@@ -163,14 +210,8 @@ const SearchScreen = () => {
             </View>
           </View>
           <View style={styles.panelControls}>
-            <TouchableOpacity onPress={handlePrevious}>
-              <Text style={styles.controlButton}>⏮</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsPlaying(!isPlaying)}>
+            <TouchableOpacity onPress={handlePlaySong}>
               <Text style={styles.controlButton}>{isPlaying ? '⏸' : '▶'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleNext}>
-              <Text style={styles.controlButton}>⏭</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -186,6 +227,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
     padding: 10,
@@ -194,6 +236,9 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
+  },
+  voiceIcon: {
+    marginLeft: 10,
   },
   tabsContainer: {
     flexDirection: 'row',
@@ -259,8 +304,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: width,
-    height: 120, // Chiều cao panel
-    backgroundColor: '#f9f9f9', // Màu trắng sữa
+    height: 120,
+    backgroundColor: '#f9f9f9',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -268,7 +313,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     borderWidth: 1,
-    borderColor: '#e0e0e0', // Đường viền nhạt
+    borderColor: '#e0e0e0',
   },
   closeButton: {
     position: 'absolute',
@@ -283,7 +328,7 @@ const styles = StyleSheet.create({
   panelLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 20, // Để tránh chạm nút đóng
+    marginTop: 20,
   },
   panelImage: {
     width: 60,
