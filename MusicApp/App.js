@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View, Button } from 'react-native';
+import { Text } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons'; // Import Icon
 
 // Import các màn hình
 import LaunchScreen from './Screen/launchScreen';
@@ -20,10 +21,29 @@ const Tab = createBottomTabNavigator();
 function HomeTabs() {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false, // Ẩn tiêu đề của từng tab
         tabBarStyle: { backgroundColor: '#f8f9fa' }, // Thiết kế tab bar
-      }}
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          // Tương ứng với từng tab
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Search') {
+            iconName = focused ? 'search' : 'search-outline';
+          } else if (route.name === 'Feed') {
+            iconName = focused ? 'newspaper' : 'newspaper-outline';
+          } else if (route.name === 'Library') {
+            iconName = focused ? 'library' : 'library-outline';
+          }
+
+          // Trả về Icon
+          return <Icon name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#1DB954', // Màu khi tab được chọn
+        tabBarInactiveTintColor: 'gray', // Màu khi tab không được chọn
+      })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Search" component={SearchScreen} />

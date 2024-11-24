@@ -39,7 +39,7 @@ export default function HomeScreen({navigation}) {
           const songsResponse = await axios.get('http://localhost:3000/songs');
           const artistsResponse = await axios.get('http://localhost:3000/artists');
   
-          setSongs(songsResponse.data || []); // 
+          setSongs(songsResponse.data || []); // Nếu không có dữ liệu, fallback về mảng rỗng
           setFilteredSongs(songsResponse.data || []);
           setArtists(artistsResponse.data || []);
       } catch (error) {
@@ -202,43 +202,43 @@ export default function HomeScreen({navigation}) {
             onChangeText={handleSearch}
         />
     );
-    const renderPlayerModal = () => (
-      <Modal
-          visible={showPlayerModal}
-          transparent={true}
-          animationType="none"
-          onRequestClose={() => setShowPlayerModal(false)}
+    // Panel phát nhạc
+const renderPlayerModal = () => (
+  <View style={styles.musicPanel}>
+      <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => setCurrentSong(null)} // Đóng panel
       >
-          <TouchableOpacity
-              style={styles.modalBackground}
-              activeOpacity={1}
-              onPress={() => setShowPlayerModal(false)}
+          <Text style={styles.closeButtonText}>✕</Text>
+      </TouchableOpacity>
+      <View style={styles.panelLeft}>
+          <Image
+              source={{
+                  uri: currentSong?.SongImg || 'https://via.placeholder.com/150',
+              }}
+              style={styles.panelImage}
           />
-          <View style={styles.bottomPlayer}>
-              <View style={styles.playerContent}>
-                  <Image
-                      source={{ uri: currentSong?.SongImg || 'https://via.placeholder.com/150' }}
-                      style={styles.playerImage}
-                  />
-                  <View style={styles.songDetails}>
-                      <Text style={styles.playerTitle}>{currentSong?.Title || 'No Title'}</Text>
-                      <Text style={styles.playerArtist}>{currentSong?.ArtistName || 'Unknown Artist'}</Text>
-                  </View>
-                  <View style={styles.playerControls}>
-                      <TouchableOpacity>
-                          <Text style={styles.controlButton}>⏮</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={playMusic}>
-                          <Text style={styles.controlButton}>⏯</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity>
-                          <Text style={styles.controlButton}>⏭</Text>
-                      </TouchableOpacity>
-                  </View>
-              </View>
+          <View style={styles.panelDetails}>
+              <Text style={styles.panelTitle}>{currentSong?.Title || 'No Title'}</Text>
+              <Text style={styles.panelSubtitle}>
+                  {currentSong?.ArtistName || 'Unknown Artist'}
+              </Text>
           </View>
-      </Modal>
-  );
+      </View>
+      <View style={styles.panelControls}>
+          <TouchableOpacity onPress={() => Alert.alert('Previous song')}>
+              <Text style={styles.controlButton}>⏮</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => playMusic()}>
+              <Text style={styles.controlButton}>{'⏯'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Alert.alert('Next song')}>
+              <Text style={styles.controlButton}>⏭</Text>
+          </TouchableOpacity>
+      </View>
+  </View>
+);
+
   
     return (
         <View style={styles.container}>
@@ -340,8 +340,13 @@ export default function HomeScreen({navigation}) {
                 />
             </ScrollView>
             {renderUserModal()}
-            {renderPlayerModal()}       
+            {/* {renderPlayerModal()} */}
+            {currentSong && renderPlayerModal()}
 
+          
+
+
+           
           <Modal visible={showModal} animationType="slide">
             <View style={styles.modalContainer}>
                 <Text style={styles.modalTitle}>{selectedChart}</Text>
@@ -376,255 +381,266 @@ export default function HomeScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-    },
-    logo: {
-        width: 30,
-        height: 30,
-        borderRadius: 5,
-    },
-    greeting: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        flex: 1,
-        textAlign: 'center',
-    },
-    rightHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    notificationIcon: {
-        width: 24,
-        height: 24,
-        marginRight: 10,
-    },
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 10,
-    },
-    searchBar: {
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        marginHorizontal: 20,
-        marginBottom: 20,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginVertical: 10,
-        marginHorizontal: 20,
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    modalContent: {
-        width: '80%',
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalAvatar: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        marginBottom: 20,
-    },
-    modalName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    modalEmail: {
-        fontSize: 16,
-        color: 'gray',
-        marginBottom: 20,
-    },
-    backButton: {
-        backgroundColor: '#ccc',
-        padding: 10,
-        borderRadius: 10,
-        width: '100%',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    backButtonText: {
-        fontSize: 16,
-        color: '#000',
-    },
-    logoutButton: {
-        backgroundColor: '#FF6347',
-        padding: 10,
-        borderRadius: 10,
-        width: '100%',
-        alignItems: 'center',
-    },
-    logoutButtonText: {
-        fontSize: 16,
-        color: '#fff',
-    },
-    chartImageContainer: {
-        marginRight: 10,
-        borderRadius: 10,
-        overflow: 'hidden',
-    },
-    chartImage: {
-        width: 150,
-        height: 150,
-        resizeMode: 'cover',
-    },
-    card: {
-        width: 150,
-        marginRight: 10,
-    },
-    cardImage: {
-        width: '100%',
-        height: 100,
-        borderRadius: 10,
-    },
-    cardTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginTop: 5,
-    },
-    cardSubtitle: {
-        fontSize: 14,
-        color: 'gray',
-    },
-    bottomPlayer: {
-        position: 'absolute',
-        bottom: 0,
-        width: '100%',
-        height: 150,
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 5,
-        padding: 10,
-    },
-    playerImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 10,
-    },
-    songDetails: {
-        flex: 1,
-        marginLeft: 10,
-        justifyContent: 'center',
-    },
-    playerTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    playerArtist: {
-        fontSize: 14,
-        color: 'gray',
-    },
-    playerControls: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: 100,
-    },
-    controlButton: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1DB954',
-    },
-    artistCard: {
-        alignItems: 'center',
-        marginRight: 10,
-    },
-    artistImage: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        marginBottom: 5,
-    },
-    artistName: {
-        fontSize: 14,
-    },
-    emptyText: {
-        fontSize: 16,
-        color: 'gray',
-        textAlign: 'center',
-        marginTop: 20,
-    },
-    followButton: {
-        marginTop: 5,
-        backgroundColor: '#1DB954',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        borderRadius: 20,
-    },
-    followText: {
-        color: '#fff',
-        fontSize: 14,
-    },
-    modalContainer: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    modalTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    modalItem: {
-        flexDirection: 'row',
-        marginBottom: 10,
-        alignItems: 'center',
-    },
-    modalItemImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 5,
-    marginRight: 10,
-    },
-    modalItemContent: {
-        flex: 1,
-    },
-    modalItemTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    modalItemSubtitle: {
-        fontSize: 14,
-        color: 'gray',
-    },
-
-    closeButton: {
-        marginTop: 20,
-        backgroundColor: '#1DB954',
-        padding: 10,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    closeButtonText: {
-        color: '#fff',
-        fontSize: 16,
-    },
-
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+  },
+  header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+  },
+  logo: {
+      width: 30,
+      height: 30,
+      borderRadius: 5,
+  },
+  greeting: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      flex: 1,
+      textAlign: 'center',
+  },
+  rightHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+  },
+  notificationIcon: {
+      width: 24,
+      height: 24,
+      marginRight: 10,
+  },
+  avatar: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      marginRight: 10,
+  },
+  searchBar: {
+      height: 40,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      borderRadius: 10,
+      paddingHorizontal: 10,
+      marginHorizontal: 20,
+      marginBottom: 20,
+  },
+  sectionTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginVertical: 10,
+      marginHorizontal: 20,
+  },
+  card: {
+      width: 150,
+      marginRight: 10,
+      backgroundColor: '#f9f9f9',
+      borderRadius: 10,
+      overflow: 'hidden',
+  },
+  cardImage: {
+      width: '100%',
+      height: 100,
+  },
+  cardTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      margin: 5,
+  },
+  cardSubtitle: {
+      fontSize: 14,
+      color: 'gray',
+      marginHorizontal: 5,
+      marginBottom: 5,
+  },
+  chartImageContainer: {
+      marginRight: 10,
+      borderRadius: 10,
+      overflow: 'hidden',
+  },
+  chartImage: {
+      width: 150,
+      height: 150,
+      resizeMode: 'cover',
+  },
+  artistCard: {
+      alignItems: 'center',
+      marginRight: 10,
+      backgroundColor: '#f9f9f9',
+      borderRadius: 10,
+      overflow: 'hidden',
+      padding: 10,
+  },
+  artistImage: {
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      marginBottom: 5,
+  },
+  artistName: {
+      fontSize: 14,
+      fontWeight: 'bold',
+  },
+  followButton: {
+      marginTop: 5,
+      backgroundColor: '#1DB954',
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderRadius: 20,
+  },
+  followText: {
+      color: '#fff',
+      fontSize: 14,
+  },
+  emptyText: {
+      fontSize: 16,
+      color: 'gray',
+      textAlign: 'center',
+      marginTop: 20,
+  },
+  // Music Panel
+  musicPanel: {
+      position: 'absolute',
+      bottom: 0,
+      width: '100%',
+      height: 120,
+      backgroundColor: '#f9f9f9',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 10,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+  },
+  closeButton: {
+      position: 'absolute',
+      top: 10,
+      right: 10,
+      zIndex: 10,
+  },
+  closeButtonText: {
+      fontSize: 20,
+      color: '#333',
+  },
+  panelLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 20,
+  },
+  panelImage: {
+      width: 60,
+      height: 60,
+      borderRadius: 10,
+  },
+  panelDetails: {
+      marginLeft: 10,
+  },
+  panelTitle: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: '#000',
+  },
+  panelSubtitle: {
+      fontSize: 12,
+      color: '#666',
+  },
+  panelControls: {
+      flexDirection: 'row',
+      alignItems: 'center',
+  },
+  controlButton: {
+      fontSize: 25,
+      color: '#333',
+      marginHorizontal: 10,
+  },
+  // Modal styles
+  modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+  },
+  modalContent: {
+      width: '80%',
+      backgroundColor: '#fff',
+      borderRadius: 20,
+      padding: 20,
+      alignItems: 'center',
+  },
+  modalAvatar: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      marginBottom: 20,
+  },
+  modalName: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 10,
+  },
+  modalEmail: {
+      fontSize: 16,
+      color: 'gray',
+      marginBottom: 20,
+  },
+  backButton: {
+      backgroundColor: '#ccc',
+      padding: 10,
+      borderRadius: 10,
+      width: '100%',
+      alignItems: 'center',
+      marginBottom: 10,
+  },
+  backButtonText: {
+      fontSize: 16,
+      color: '#000',
+  },
+  logoutButton: {
+      backgroundColor: '#FF6347',
+      padding: 10,
+      borderRadius: 10,
+      width: '100%',
+      alignItems: 'center',
+  },
+  logoutButtonText: {
+      fontSize: 16,
+      color: '#fff',
+  },
+  modalContainer: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: '#fff',
+  },
+  modalTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 20,
+  },
+  modalItem: {
+      flexDirection: 'row',
+      marginBottom: 10,
+      alignItems: 'center',
+  },
+  modalItemImage: {
+      width: 50,
+      height: 50,
+      borderRadius: 5,
+      marginRight: 10,
+  },
+  modalItemContent: {
+      flex: 1,
+  },
+  modalItemTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+  },
+  modalItemSubtitle: {
+      fontSize: 14,
+      color: 'gray',
+  },
 });
+
